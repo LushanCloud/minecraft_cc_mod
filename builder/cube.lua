@@ -355,7 +355,11 @@ local function main(args)
     else
         state.size = size
     end
+    -- Initial resupply first
+    print("\nInitial supply check...")
+    doResupply()
     
+    -- Now check if we have blocks (after resupply)
     local hasBlocks = false
     for slot = 1, 16 do
         if turtle.getItemCount(slot) > 0 then
@@ -365,13 +369,10 @@ local function main(args)
     end
     
     if not hasBlocks then
-        print("Error: No blocks in inventory!")
-        print("Please add blocks and try again")
+        print("Error: No blocks available!")
+        print("Check the chest below and try again")
         return
     end
-    
-    print("\nInitial supply check...")
-    doResupply()
     
     while true do
         if state.paused then
