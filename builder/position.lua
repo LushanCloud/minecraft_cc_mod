@@ -1,23 +1,23 @@
 -- position.lua
--- 海龟位置追踪模块
--- 维护相对于起点(0,0,0)的坐标和朝向
+-- Turtle position tracking module
+-- Maintains position relative to origin (0,0,0)
 
 local position = {
     x = 0,
     y = 0,
     z = 0,
-    facing = 0  -- 0=北(z-), 1=东(x+), 2=南(z+), 3=西(x-)
+    facing = 0  -- 0=north(z-), 1=east(x+), 2=south(z+), 3=west(x-)
 }
 
--- 方向名称
+-- Direction names
 local DIRECTIONS = {"north", "east", "south", "west"}
 
--- 获取当前位置
+-- Get current position
 function position.get()
     return {x = position.x, y = position.y, z = position.z, facing = position.facing}
 end
 
--- 设置位置（用于恢复进度）
+-- Set position (for restoring progress)
 function position.set(x, y, z, facing)
     position.x = x or position.x
     position.y = y or position.y
@@ -25,7 +25,7 @@ function position.set(x, y, z, facing)
     position.facing = facing or position.facing
 end
 
--- 重置到原点
+-- Reset to origin
 function position.reset()
     position.x = 0
     position.y = 0
@@ -33,17 +33,17 @@ function position.reset()
     position.facing = 0
 end
 
--- 计算曼哈顿距离
+-- Calculate Manhattan distance
 function position.distanceTo(x, y, z)
     return math.abs(position.x - x) + math.abs(position.y - y) + math.abs(position.z - z)
 end
 
--- 计算到原点的距离
+-- Calculate distance to origin
 function position.distanceToHome()
     return position.distanceTo(0, 0, 0)
 end
 
--- 向前移动
+-- Move forward
 function position.forward()
     if turtle.forward() then
         if position.facing == 0 then
@@ -60,7 +60,7 @@ function position.forward()
     return false
 end
 
--- 向后移动
+-- Move back
 function position.back()
     if turtle.back() then
         if position.facing == 0 then
@@ -77,7 +77,7 @@ function position.back()
     return false
 end
 
--- 向上移动
+-- Move up
 function position.up()
     if turtle.up() then
         position.y = position.y + 1
@@ -86,7 +86,7 @@ function position.up()
     return false
 end
 
--- 向下移动
+-- Move down
 function position.down()
     if turtle.down() then
         position.y = position.y - 1
@@ -95,30 +95,30 @@ function position.down()
     return false
 end
 
--- 左转
+-- Turn left
 function position.turnLeft()
     turtle.turnLeft()
     position.facing = (position.facing - 1) % 4
 end
 
--- 右转
+-- Turn right
 function position.turnRight()
     turtle.turnRight()
     position.facing = (position.facing + 1) % 4
 end
 
--- 转向指定方向
+-- Face specified direction
 function position.face(dir)
     while position.facing ~= dir do
         position.turnRight()
     end
 end
 
--- 返回原点（简单版：先Y轴，再X轴，最后Z轴）
+-- Return to origin (simple: Y first, then X, then Z)
 function position.goHome()
-    print("返回基地...")
+    print("Returning home...")
     
-    -- 先降到 y=0
+    -- First go to y=0
     while position.y > 0 do
         if not position.down() then
             turtle.digDown()
@@ -132,11 +132,11 @@ function position.goHome()
         end
     end
     
-    -- 移动到 x=0
+    -- Move to x=0
     if position.x > 0 then
-        position.face(3)  -- 西
+        position.face(3)  -- west
     elseif position.x < 0 then
-        position.face(1)  -- 东
+        position.face(1)  -- east
     end
     while position.x ~= 0 do
         if not position.forward() then
@@ -145,11 +145,11 @@ function position.goHome()
         end
     end
     
-    -- 移动到 z=0
+    -- Move to z=0
     if position.z > 0 then
-        position.face(0)  -- 北
+        position.face(0)  -- north
     elseif position.z < 0 then
-        position.face(2)  -- 南
+        position.face(2)  -- south
     end
     while position.z ~= 0 do
         if not position.forward() then
@@ -158,14 +158,14 @@ function position.goHome()
         end
     end
     
-    -- 面向北方
+    -- Face north
     position.face(0)
-    print("已返回基地")
+    print("Home reached")
 end
 
--- 移动到指定坐标
+-- Move to specified coordinates
 function position.goTo(targetX, targetY, targetZ)
-    -- 先处理Y轴
+    -- Handle Y axis first
     while position.y < targetY do
         if not position.up() then
             turtle.digUp()
@@ -179,11 +179,11 @@ function position.goTo(targetX, targetY, targetZ)
         end
     end
     
-    -- 处理X轴
+    -- Handle X axis
     if position.x < targetX then
-        position.face(1)  -- 东
+        position.face(1)  -- east
     elseif position.x > targetX then
-        position.face(3)  -- 西
+        position.face(3)  -- west
     end
     while position.x ~= targetX do
         if not position.forward() then
@@ -192,11 +192,11 @@ function position.goTo(targetX, targetY, targetZ)
         end
     end
     
-    -- 处理Z轴
+    -- Handle Z axis
     if position.z < targetZ then
-        position.face(2)  -- 南
+        position.face(2)  -- south
     elseif position.z > targetZ then
-        position.face(0)  -- 北
+        position.face(0)  -- north
     end
     while position.z ~= targetZ do
         if not position.forward() then
@@ -206,9 +206,9 @@ function position.goTo(targetX, targetY, targetZ)
     end
 end
 
--- 打印当前位置
+-- Print current position
 function position.print()
-    print(string.format("位置: (%d, %d, %d) 朝向: %s", 
+    print(string.format("Pos: (%d, %d, %d) Facing: %s", 
         position.x, position.y, position.z, DIRECTIONS[position.facing + 1]))
 end
 
