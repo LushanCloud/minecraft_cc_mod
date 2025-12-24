@@ -255,17 +255,38 @@ local function buildPillars()
         {x = 0, z = size - 1}
     }
     
-    for _, corner in ipairs(corners) do
+    for i, corner in ipairs(corners) do
+        print(string.format("Pillar %d/4 at (%d, %d)", i, corner.x, corner.z))
         pos.goTo(corner.x, 1, corner.z)
         
+        -- Build upward
         for h = 2, size - 1 do
             if not safeUp() then return false end
             if not safePlaceDown() then return false end
         end
         
+        -- Return to bottom
+        print("Descending...")
+        local retries = 0
         while pos.y > 1 do
-            pos.down()
+            if not pos.down() then
+                turtle.digDown()
+                sleep(0.3)
+                if not pos.down() then
+                    retries = retries + 1
+                    if retries > 10 then
+                        print("Error: Stuck going down in pillar!")
+                        return false
+                    end
+                    sleep(0.5)
+                else
+                    retries = 0
+                end
+            else
+                retries = 0
+            end
         end
+        print(string.format("Pillar %d complete", i))
     end
     
     return true
