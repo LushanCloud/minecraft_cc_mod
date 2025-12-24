@@ -7,7 +7,8 @@ local baseUrl = "https://raw.githubusercontent.com/LushanCloud/minecraft_cc_mod/
 local files = {
     "lib.lua",
     "inv.lua",
-    "ui.lua"
+    "ui.lua",
+    "stateful.lua"
 }
 
 print("Fetching schematic builder libraries...")
