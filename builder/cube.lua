@@ -213,7 +213,11 @@ local function buildBottomEdges()
     print("Building bottom edges...")
     local size = state.size
     
-    pos.goTo(0, 1, 0)
+    -- Start at (1,1,0) to avoid fuel chest at origin
+    -- First move forward, then up
+    pos.goTo(1, 0, 0)  -- Move forward first
+    pos.goTo(1, 1, 0)  -- Then go up
+    pos.goTo(0, 1, 0)  -- Go back to corner
     
     for edge = 1, 4 do
         if not buildLine(size) then return false end

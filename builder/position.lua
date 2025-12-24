@@ -164,22 +164,9 @@ function position.goHome()
 end
 
 -- Move to specified coordinates
+-- IMPORTANT: Moves X/Z first, then Y, to avoid chest above origin
 function position.goTo(targetX, targetY, targetZ)
-    -- Handle Y axis first
-    while position.y < targetY do
-        if not position.up() then
-            turtle.digUp()
-            position.up()
-        end
-    end
-    while position.y > targetY do
-        if not position.down() then
-            turtle.digDown()
-            position.down()
-        end
-    end
-    
-    -- Handle X axis
+    -- Handle X axis first (move away from origin)
     if position.x < targetX then
         position.face(1)  -- east
     elseif position.x > targetX then
@@ -202,6 +189,20 @@ function position.goTo(targetX, targetY, targetZ)
         if not position.forward() then
             turtle.dig()
             position.forward()
+        end
+    end
+    
+    -- Handle Y axis last (now safe from chest)
+    while position.y < targetY do
+        if not position.up() then
+            turtle.digUp()
+            position.up()
+        end
+    end
+    while position.y > targetY do
+        if not position.down() then
+            turtle.digDown()
+            position.down()
         end
     end
 end
