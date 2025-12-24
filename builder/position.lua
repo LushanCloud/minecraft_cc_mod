@@ -162,20 +162,39 @@ function position.goHome()
     position.face(0)
     print("Home reached")
 end
-
 -- Move to specified coordinates
 -- IMPORTANT: Moves X/Z first, then Y, to avoid chest above origin
 function position.goTo(targetX, targetY, targetZ)
+    print(string.format("GoTo: (%d,%d,%d) -> (%d,%d,%d)", 
+        position.x, position.y, position.z, targetX, targetY, targetZ))
+    
+    local maxRetries = 10
+    local retries = 0
+    
     -- Handle X axis first (move away from origin)
     if position.x < targetX then
         position.face(1)  -- east
     elseif position.x > targetX then
         position.face(3)  -- west
     end
+    retries = 0
     while position.x ~= targetX do
         if not position.forward() then
             turtle.dig()
-            position.forward()
+            sleep(0.3)  -- Wait for blocks to settle
+            if not position.forward() then
+                retries = retries + 1
+                if retries > maxRetries then
+                    print("Error: Stuck on X axis!")
+                    return false
+                end
+                turtle.attack()  -- Try attacking entity
+                sleep(0.5)
+            else
+                retries = 0
+            end
+        else
+            retries = 0
         end
     end
     
@@ -185,26 +204,71 @@ function position.goTo(targetX, targetY, targetZ)
     elseif position.z > targetZ then
         position.face(0)  -- north
     end
+    retries = 0
     while position.z ~= targetZ do
         if not position.forward() then
             turtle.dig()
-            position.forward()
+            sleep(0.3)
+            if not position.forward() then
+                retries = retries + 1
+                if retries > maxRetries then
+                    print("Error: Stuck on Z axis!")
+                    return false
+                end
+                turtle.attack()
+                sleep(0.5)
+            else
+                retries = 0
+            end
+        else
+            retries = 0
         end
     end
     
     -- Handle Y axis last (now safe from chest)
+    retries = 0
     while position.y < targetY do
         if not position.up() then
             turtle.digUp()
-            position.up()
+            sleep(0.3)
+            if not position.up() then
+                retries = retries + 1
+                if retries > maxRetries then
+                    print("Error: Stuck going up!")
+                    return false
+                end
+                turtle.attackUp()
+                sleep(0.5)
+            else
+                retries = 0
+            end
+        else
+            retries = 0
         end
     end
+    retries = 0
     while position.y > targetY do
         if not position.down() then
             turtle.digDown()
-            position.down()
+            sleep(0.3)
+            if not position.down() then
+                retries = retries + 1
+                if retries > maxRetries then
+                    print("Error: Stuck going down!")
+                    return false
+                end
+                turtle.attackDown()
+                sleep(0.5)
+            else
+                retries = 0
+            end
+        else
+            retries = 0
         end
     end
+    
+    print(string.format("Arrived: (%d,%d,%d)", position.x, position.y, position.z))
+    return true
 end
 
 -- Print current position

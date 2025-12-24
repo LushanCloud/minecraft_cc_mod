@@ -171,14 +171,27 @@ local function safePlaceDown()
         return false
     end
     
+    -- Find a slot with blocks
+    local foundSlot = nil
     for slot = 1, 16 do
         if turtle.getItemCount(slot) > 0 then
+            foundSlot = slot
             turtle.select(slot)
             break
         end
     end
     
-    turtle.placeDown()
+    if not foundSlot then
+        print("Error: No blocks in inventory!")
+        return false
+    end
+    
+    local success = turtle.placeDown()
+    if success then
+        print(string.format("Placed block at (%d,%d,%d)", pos.x, pos.y - 1, pos.z))
+    else
+        print("Warning: Could not place block!")
+    end
     return true
 end
 
