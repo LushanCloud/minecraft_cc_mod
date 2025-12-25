@@ -1,4 +1,4 @@
-local lib = require("stateful")
+local lib = require("lib")
 turtle.turnLeft()
 turtle.turnLeft()
 lib.refuel(62)
